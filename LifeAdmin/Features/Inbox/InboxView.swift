@@ -9,7 +9,8 @@ struct InboxView: View {
 
     @Query(
         filter: #Predicate<Commitment> { $0.approvalRaw == "pending" },
-        sort: [SortDescriptor(\Commitment.due, order: .forward), SortDescriptor(\Commitment.createdAt, order: .reverse)]
+        sort: \Commitment.createdAt,
+        order: .reverse
     )
     private var pending: [Commitment]
 
@@ -86,46 +87,65 @@ struct CommitmentCard: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
-            HStack {
-                Label(commitment.kind.label, systemImage: kindIcon)
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
-                Spacer()
-                Text("\(Int(commitment.confidence * 100))%")
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
-            }
-
-            Text(commitment.summary)
-                .font(.body)
-
-            if let due = commitment.due {
-                Label(due.formatted(date: .abbreviated, time: .shortened), systemImage: "clock")
-                    .font(.caption)
-                    .foregroundStyle(due < .now ? .red : .primary)
-            }
-
-            if let amount = commitment.amount, let currency = commitment.currencyCode {
-                Label("\(currency) \(amount.formatted())", systemImage: "dollarsign.circle")
-                    .font(.caption)
-            }
-
-            DisclosureGroup("Evidence") {
-                Text(commitment.evidenceText)
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
-            }
-
-            HStack {
-                Button("Dismiss", role: .destructive, action: onDismiss)
-                    .buttonStyle(.bordered)
-                Spacer()
-                Button("Approve", action: onApprove)
-                    .buttonStyle(.borderedProminent)
-            }
-            .padding(.top, 4)
+            headerRow
+            Text(commitment.summary).font(.body)
+            dueRow
+            amountRow
+            evidenceDisclosure
+            actionRow
         }
         .padding(.vertical, 4)
+    }
+
+    @ViewBuilder
+    private var headerRow: some View {
+        HStack {
+            Label(commitment.kind.label, systemImage: kindIcon)
+                .font(.caption)
+                .foregroundStyle(.secondary)
+            Spacer()
+            Text("\(Int(commitment.confidence * 100))%")
+                .font(.caption)
+                .foregroundStyle(.secondary)
+        }
+    }
+
+    @ViewBuilder
+    private var dueRow: some View {
+        if let due = commitment.due {
+            Label(due.formatted(date: .abbreviated, time: .shortened), systemImage: "clock")
+                .font(.caption)
+                .foregroundStyle(due < .now ? Color.red : Color.primary)
+        }
+    }
+
+    @ViewBuilder
+    private var amountRow: some View {
+        if let amount = commitment.amount, let currency = commitment.currencyCode {
+            Label("\(currency) \(amount.formatted())", systemImage: "dollarsign.circle")
+                .font(.caption)
+        }
+    }
+
+    @ViewBuilder
+    private var evidenceDisclosure: some View {
+        DisclosureGroup("Evidence") {
+            Text(commitment.evidenceText)
+                .font(.caption)
+                .foregroundStyle(.secondary)
+        }
+    }
+
+    @ViewBuilder
+    private var actionRow: some View {
+        HStack {
+            Button("Dismiss", role: .destructive, action: onDismiss)
+                .buttonStyle(.bordered)
+            Spacer()
+            Button("Approve", action: onApprove)
+                .buttonStyle(.borderedProminent)
+        }
+        .padding(.top, 4)
     }
 
     private var kindIcon: String {

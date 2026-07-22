@@ -1,0 +1,14 @@
+# Xcode
+build/
+DerivedData/
+xcuserdata/
+*.xcuserdatad
+*.xcuserstate
+*.xcworkspace/xcuserdata/
+
+# XcodeGen output (regenerable from project.yml)
+LifeAdmin/LifeAdmin.xcodeproj/
+LifeAdmin/Resources/Info.plist
+
+# macOS
+.DS_Store

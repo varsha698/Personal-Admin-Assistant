@@ -65,7 +65,7 @@ struct SettingsView: View {
 
                 Section("About") {
                     LabeledContent("Version", value: appVersion)
-                    LabeledContent("Storage", value: "Local + iCloud (CloudKit)")
+                    LabeledContent("Storage", value: "Local (on device)")
                     LabeledContent("AI", value: "On-device (Foundation Models)")
                 }
             }
